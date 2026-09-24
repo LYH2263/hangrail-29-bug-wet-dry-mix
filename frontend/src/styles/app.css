@@ -1,0 +1,312 @@
+:root {
+  --hang-void: #100c0a;
+  --hang-wood: #2a1c14;
+  --hang-metal: #8a7a6a;
+  --hang-copper: #e8a87c;
+  --hang-tag: #f5ebe0;
+  --hang-ink: #2a1810;
+  --hang-muted: #b9a593;
+  --text: #f7efe6;
+  --panel: #241c17;
+  --line: #3a2e26;
+  --accent: var(--hang-copper);
+  --seg: #6b4f3a;
+  --free: #2a221c;
+  font-family: "Noto Sans SC", "IBM Plex Sans", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--hang-void);
+  color: var(--text);
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+
+/* —— RULER: icon spine | full-width rail + hanging tags | bottom tray —— */
+.hangframe-shell {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a120e 0%, var(--hang-void) 40%);
+}
+
+.icon-spine {
+  background: #0a0806;
+  border-right: 1px solid #2a2018;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: .5rem 0;
+  z-index: 3;
+}
+.icon-spine-brand {
+  width: 36px; height: 36px;
+  border-radius: 4px;
+  background: var(--hang-copper);
+  color: #2a1608;
+  font-weight: 900;
+  font-size: .7rem;
+  display: grid; place-items: center;
+  margin-bottom: .5rem;
+}
+.spine-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--hang-muted);
+  gap: 1px;
+}
+.spine-icon:hover { background: #1a1410; color: var(--text); }
+.spine-icon--on {
+  background: #2a1c14;
+  color: var(--hang-copper);
+  box-shadow: inset 0 0 0 1px var(--hang-copper);
+}
+.spine-icon-glyph { font-size: .95rem; line-height: 1; }
+.spine-icon-tip { font-size: .5rem; letter-spacing: 0; }
+
+.hangframe-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+.rail-ruler-chrome {
+  background: linear-gradient(180deg, #2a1e16, #1a120e);
+  border-bottom: 2px solid #4a3828;
+  padding: .55rem 1rem .35rem;
+  flex-shrink: 0;
+}
+.rail-ruler-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: .4rem;
+  font-size: .75rem;
+  color: var(--hang-muted);
+}
+.rail-ruler-title {
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--hang-copper);
+}
+.rail-bar {
+  position: relative;
+  height: 18px;
+  margin: 0 0 0;
+}
+.rail-bar-metal {
+  position: absolute;
+  left: 0; right: 0; top: 4px;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(
+    180deg,
+    #c4b4a4 0%,
+    #8a7a6a 35%,
+    #5a4a3a 70%,
+    #3a2e26 100%
+  );
+  box-shadow: 0 2px 0 #1a1008, inset 0 1px 0 rgba(255,255,255,.25);
+}
+.rail-bar-ticks {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 18px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.tick {
+  width: 1px;
+  height: 8px;
+  background: #2a2018;
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+.tick--major {
+  height: 14px;
+  width: 2px;
+  background: #1a120c;
+}
+
+.ticket-hang-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  overflow-x: auto;
+  padding: .35rem 0 .65rem;
+  min-height: 88px;
+  align-items: flex-start;
+}
+.ticket-hang-empty {
+  color: var(--hang-muted);
+  font-size: .82rem;
+  padding: .75rem 0;
+}
+.hang-tag {
+  flex: 0 0 auto;
+  width: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hang-tag-hook {
+  width: 2px;
+  height: 14px;
+  background: #6a5a4a;
+  margin-bottom: 0;
+}
+.hang-tag-body {
+  background: var(--hang-tag);
+  color: var(--hang-ink);
+  width: 100%;
+  padding: .4rem .35rem;
+  border-radius: 2px 2px 6px 6px;
+  box-shadow: 2px 3px 0 rgba(0,0,0,.35);
+  font-size: .68rem;
+  text-align: center;
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+  padding-bottom: .7rem;
+}
+.hang-tag-code {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 800;
+  font-size: .7rem;
+}
+.hang-tag-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hang-tag-rail { opacity: .55; font-size: .6rem; }
+.hang-tag-body--dry { background: #e3ecf5; }
+.hang-tag-body--wet { background: #d8f0ee; }
+
+.hangframe-stage {
+  flex: 1;
+  padding: 1rem 1.25rem;
+  overflow: auto;
+  min-height: 0;
+}
+
+.bottom-tray {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 2px solid #4a3828;
+  background: #160e0a;
+  flex-shrink: 0;
+}
+.tray-col {
+  padding: .55rem .9rem .7rem;
+  border-right: 1px solid #2a2018;
+}
+.tray-col--warn { border-right: none; background: rgba(180, 60, 40, .08); }
+.tray-label {
+  font-size: .7rem;
+  letter-spacing: .12em;
+  color: var(--hang-muted);
+  margin-bottom: .35rem;
+  display: flex;
+  justify-content: space-between;
+}
+.tray-label a { color: var(--hang-copper); letter-spacing: 0; }
+.tray-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tray-chip {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  padding: .2rem .45rem;
+  background: #2a2018;
+  border: 1px solid #4a3828;
+  border-radius: 3px;
+  color: var(--hang-tag);
+}
+.tray-chip--overdue {
+  background: #3a1810;
+  border-color: #a05040;
+  color: #ffb0a0;
+}
+.tray-empty { font-size: .78rem; color: #6a5a4a; }
+
+h2 { margin: 0 0 1rem; font-size: 1.15rem; color: var(--hang-copper); }
+.toolbar { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+select, input, button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: .5rem .75rem; font: inherit;
+}
+button {
+  background: var(--hang-copper); color: #2a1608; font-weight: 700;
+  border: none; cursor: pointer;
+}
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td {
+  border-bottom: 1px solid var(--line); padding: .5rem .35rem;
+  text-align: left; font-size: .92rem;
+}
+.mono { font-family: "IBM Plex Mono", monospace; }
+.err { color: #ff9b7a; } .ok { color: #d4c08a; }
+
+.ruler-wrap {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed #3a2e26;
+  border-radius: 0;
+  padding: .75rem 0 1rem;
+  margin-bottom: .5rem;
+}
+.ruler-label {
+  display: flex; justify-content: space-between;
+  color: var(--hang-muted); font-size: .85rem; margin-bottom: .4rem;
+}
+.ruler {
+  position: relative; height: 52px;
+  background: repeating-linear-gradient(
+    90deg, var(--free), var(--free) 9px, #322820 9px, #322820 10px
+  );
+  border-radius: 2px; overflow: hidden; border: 1px solid var(--line);
+}
+.seg {
+  position: absolute; top: 8px; bottom: 8px; background: var(--seg); border-radius: 4px;
+  border: 1px solid #a8876a; color: #fff; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px; overflow: hidden; white-space: nowrap;
+}
+
+/* —— 干湿隔离 —— */
+.state-badge {
+  display: inline-block; font-size: .75rem; padding: .1rem .5rem; border-radius: 10px;
+  border: 1px solid;
+}
+.state-badge--dry { color: #9ec3e8; border-color: #3f6f9e; background: rgba(70,120,170,.14); }
+.state-badge--wet { color: #8fd6d0; border-color: #2f8b85; background: rgba(45,140,135,.16); }
+
+.rail-state {
+  display: inline-block; margin-left: .55rem; font-size: .7rem;
+  padding: .05rem .45rem; border-radius: 10px; border: 1px solid;
+}
+.rail-state--dry { color: #9ec3e8; border-color: #3f6f9e; background: rgba(70,120,170,.14); }
+.rail-state--wet { color: #8fd6d0; border-color: #2f8b85; background: rgba(45,140,135,.16); }
+.rail-state--empty { color: var(--hang-muted); border-color: var(--line); }
+
+.seg--dry { background: #4a5a78; border-color: #8fb0d8; }
+.seg--wet { background: #2f6f6a; border-color: #7fcfc8; }
+.seg-state { font-weight: 800; margin-right: 3px; opacity: .85; }
+
+.err--isolation {
+  border: 1px solid #a05040; background: #3a1810; border-radius: 6px;
+  padding: .6rem .75rem; color: #ffb0a0;
+}
+.err-tag {
+  display: inline-block; margin-right: .5rem; padding: .05rem .45rem;
+  border-radius: 3px; background: #a05040; color: #1a0806;
+  font-weight: 800; font-size: .75rem;
+}
