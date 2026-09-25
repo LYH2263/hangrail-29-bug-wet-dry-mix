@@ -296,6 +296,7 @@ button {
 .rail-state--dry { color: #9ec3e8; border-color: #3f6f9e; background: rgba(70,120,170,.14); }
 .rail-state--wet { color: #8fd6d0; border-color: #2f8b85; background: rgba(45,140,135,.16); }
 .rail-state--empty { color: var(--hang-muted); border-color: var(--line); }
+.rail-state--mixed { color: #e8c39e; border-color: #9e7a3f; background: rgba(170,130,70,.16); }
 
 .seg--dry { background: #4a5a78; border-color: #8fb0d8; }
 .seg--wet { background: #2f6f6a; border-color: #7fcfc8; }

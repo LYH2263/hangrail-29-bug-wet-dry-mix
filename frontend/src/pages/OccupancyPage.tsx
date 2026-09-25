@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import { pieceMark, railWordFromPieces } from "../dryCopy";
+import { pieceMark } from "../dryCopy";
 type Rail = { id: number; label: string; length_cm: number };
 type Seg = { ticket_code: string; garment_name: string; dry_state: string | null; start_cm: number; end_cm: number };
 type Occ = { rail_id: number; label: string; length_cm: number; rail_dry_state: string | null; segments: Seg[] };
 
+// 杆属性直接采用后端 rail_dry_state —— 与上杆隔离判定同一来源，保证图、列表、上杆结果一致
 function railStateText(s: string | null, count: number) {
   if (!count) return "空杆";
-  return s === "wet" ? "湿衣杆" : "干衣杆";
+  if (s === "wet") return "湿衣杆";
+  if (s === "mixed") return "干湿混挂（历史遗留）";
+  return "干衣杆";
+}
+function railStateClass(s: string | null, count: number) {
+  if (!count) return "rail-state rail-state--empty";
+  if (s === "wet") return "rail-state rail-state--wet";
+  if (s === "mixed") return "rail-state rail-state--mixed";
+  return "rail-state rail-state--dry";
 }
 function segClass(s: string | null) {
   return s === "wet" ? "seg seg--wet" : "seg seg--dry";
-}
-function segText(s: string | null) {
-  return s === "wet" ? "湿" : "干";
 }
 
 export default function OccupancyPage() {
@@ -32,8 +38,8 @@ export default function OccupancyPage() {
       <div className="ruler-wrap" key={m.rail_id}>
         <div className="ruler-label">
           <span>{m.label}
-            <span className={m.segments.length ? (m.rail_dry_state === "wet" ? "rail-state rail-state--wet" : "rail-state rail-state--dry") : "rail-state rail-state--empty"}>
-              {railWordFromPieces(m.segments.map(s => s.dry_state))}
+            <span className={railStateClass(m.rail_dry_state, m.segments.length)}>
+              {railStateText(m.rail_dry_state, m.segments.length)}
             </span>
           </span>
           <span className="mono">0 — {m.length_cm} cm</span>

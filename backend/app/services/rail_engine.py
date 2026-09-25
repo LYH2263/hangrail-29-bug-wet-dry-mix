@@ -11,6 +11,8 @@ from dataclasses import dataclass
 
 DRY = "dry"
 WET = "wet"
+# 历史遗留混挂杆（隔离上线前已同杆挂有干+湿）的汇总值
+MIXED = "mixed"
 
 
 @dataclass(frozen=True)
@@ -49,10 +51,13 @@ def rail_state(occupied_states: list[str | None]) -> str | None:
     """杆上当前干湿集合的属性；空杆返回 None。
 
     有占位即非空：历史工单 None 归一化为干衣，因此全 None 的杆是干衣杆。
+    同时含干+湿的混挂杆（隔离上线前的历史数据）返回 MIXED，取值确定。
     """
     if not occupied_states:
         return None
     states = {effective_state(s) for s in occupied_states}
+    if len(states) > 1:
+        return MIXED
     return next(iter(states))
 
 

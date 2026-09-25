@@ -1,19 +1,19 @@
 
-"""干湿是否拦住上杆，以及占位图怎么汇总杆属性。"""
+"""干湿是否拦住上杆：杆上已挂衣物中只要存在相反属性即隔离。"""
 from __future__ import annotations
 
-from app.services.rail_engine import DRY, WET, IsolationConflict, first_fit, rail_state
+from app.services.rail_engine import DRY, WET, IsolationConflict, effective_state, first_fit
 
 
 def gate(rail_length, occupied, garment_cm, garment_state, occupied_states):
-    current = rail_state(occupied_states or [])
-    incoming = garment_state if garment_state in (DRY, WET) else None
-    if incoming == WET and current == WET and occupied:
-        return IsolationConflict(current or WET)
+    """先过隔离，再走现网 First-Fit。
+
+    待挂衣物按 effective_state 归一化（未标注 None → 干衣）；杆上已挂衣物中
+    只要存在相反有效属性，无论空隙是否足够都返回 IsolationConflict。
+    """
+    incoming = effective_state(garment_state)
+    opposite = WET if incoming == DRY else DRY
+    on_rail = {effective_state(s) for s in (occupied_states or [])}
+    if opposite in on_rail:
+        return IsolationConflict(opposite)
     return first_fit(rail_length, occupied, garment_cm)
-
-
-def state_for_map(raw: str | None) -> str | None:
-    if raw == WET:
-        return None
-    return DRY if raw == DRY or raw is None else raw

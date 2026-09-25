@@ -77,8 +77,8 @@ def occupancy(rail_id: int, db: Session = Depends(get_db)):
         order = db.get(WorkOrder, p.order_id)
         if not order:
             continue
-        from app.services.isolate_gate import state_for_map
-        states.append(state_for_map(order.dry_state))
+        # 与上杆判定同源：原始 dry_state 交给 rail_state 归一化（None→干衣）
+        states.append(order.dry_state)
         segs.append(
             OccupancySeg(
                 order_id=order.id,
@@ -154,9 +154,13 @@ def hang(body: HangRequest, db: Session = Depends(get_db)):
         wanted = "湿衣" if order.dry_state == "wet" else "干衣"
         message = f"干湿隔离冲突：{names} 已挂相反属性衣物，{wanted}不得同杆（与空隙无关）"
     elif conflicts:
-        blocked = "、".join(f"{f['label']}（{'干衣' if f['rail_dry_state'] == 'dry' else '湿衣'}杆隔离）" for f in conflicts)
-        message = "挂杆空间不足"
+        # 部分杆隔离、部分杆没空隙：必须点明隔离原因，不能伪装成单纯空间不足
         code = "mixed"
+        blocked = "、".join(
+            f"{f['label']}（{'干衣' if f['rail_dry_state'] == 'dry' else '湿衣'}杆隔离）"
+            for f in conflicts
+        )
+        message = f"干湿隔离冲突：{blocked}；其余挂杆空间不足"
     else:
         code = "no_space"
         message = "挂杆空间不足"

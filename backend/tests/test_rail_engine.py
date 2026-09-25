@@ -1,5 +1,6 @@
 from app.services.rail_engine import (
     DRY,
+    MIXED,
     WET,
     IsolationConflict,
     Segment,
@@ -101,3 +102,15 @@ def test_same_state_but_no_space_returns_none():
     """同属性但空隙不够：普通空间不足，不是隔离。"""
     occ = [Segment(0, 180)]
     assert try_fit(200, occ, 50, WET, [WET]) is None
+
+
+def test_legacy_mixed_rail_is_sealed():
+    """隔离上线前的混挂杆：干湿都不得再上（相反属性已存在），汇总为 mixed。"""
+    occ = [Segment(0, 40), Segment(50, 90)]
+    assert rail_state([DRY, WET]) == MIXED
+    r_dry = try_fit(200, occ, 30, DRY, [DRY, WET])
+    assert isinstance(r_dry, IsolationConflict)
+    assert r_dry.rail_state == WET
+    r_wet = try_fit(200, occ, 30, WET, [DRY, WET])
+    assert isinstance(r_wet, IsolationConflict)
+    assert r_wet.rail_state == DRY
