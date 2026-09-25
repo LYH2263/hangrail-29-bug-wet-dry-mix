@@ -148,18 +148,26 @@ def hang(body: HangRequest, db: Session = Depends(get_db)):
         return order
 
     conflicts = [f for f in failures if f["reason"] == "isolation_conflict"]
-    if conflicts and len(conflicts) == len(failures):
+    no_space = [f for f in failures if f["reason"] == "no_space"]
+    wanted = "湿衣" if order.dry_state == "wet" else "干衣"
+    if conflicts and not no_space:
         code = "isolation_conflict"
         names = "、".join(f["label"] for f in conflicts)
-        wanted = "湿衣" if order.dry_state == "wet" else "干衣"
         message = f"干湿隔离冲突：{names} 已挂相反属性衣物，{wanted}不得同杆（与空隙无关）"
-    elif conflicts:
-        blocked = "、".join(f"{f['label']}（{'干衣' if f['rail_dry_state'] == 'dry' else '湿衣'}杆隔离）" for f in conflicts)
-        message = "挂杆空间不足"
-        code = "mixed"
-    else:
+    elif no_space and not conflicts:
         code = "no_space"
-        message = "挂杆空间不足"
+        names = "、".join(f["label"] for f in no_space)
+        message = f"挂杆空间不足：{names} 空隙不够（{wanted}，与干湿隔离无关）"
+    else:
+        code = "mixed"
+        blocked = "、".join(
+            f"{f['label']}（{'干衣' if f['rail_dry_state'] == 'dry' else '湿衣'}杆隔离）"
+            for f in conflicts
+        )
+        tight = "、".join(f["label"] for f in no_space)
+        message = (
+            f"无可用挂杆：{blocked} 因干湿隔离不可挂；{tight} 空隙不足"
+        )
     raise HTTPException(409, detail={"code": code, "message": message, "rails": failures})
 
 

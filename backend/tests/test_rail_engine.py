@@ -101,3 +101,28 @@ def test_same_state_but_no_space_returns_none():
     """同属性但空隙不够：普通空间不足，不是隔离。"""
     occ = [Segment(0, 180)]
     assert try_fit(200, occ, 50, WET, [WET]) is None
+
+
+def test_unlabeled_incoming_is_dry_and_blocked_by_wet_rail():
+    """来件未标注（None）按干衣：湿衣杆必须将其拦下，不能上杆。"""
+    occ = [Segment(0, 40)]
+    result = try_fit(160, occ, 30, None, [WET])
+    assert isinstance(result, IsolationConflict)
+    assert result.rail_state == WET
+
+
+def test_rail_state_deterministic():
+    """杆属性汇总与入参顺序无关；空杆为 None，全历史单为干衣，含湿为湿衣杆。"""
+    assert rail_state([]) is None
+    assert rail_state([None, None]) == DRY
+    assert rail_state([DRY, None]) == DRY
+    assert rail_state([WET, DRY]) == WET
+    assert rail_state([DRY, WET]) == WET
+
+
+def test_state_for_map_keeps_wet():
+    """占位图汇总不得把湿衣抹成空属性。"""
+    from app.services.isolate_gate import state_for_map
+    assert state_for_map("wet") == WET
+    assert state_for_map("dry") == DRY
+    assert state_for_map(None) == DRY

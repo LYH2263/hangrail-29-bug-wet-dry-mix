@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import { pieceMark, railWordFromPieces } from "../dryCopy";
+import { pieceMark } from "../dryCopy";
 type Rail = { id: number; label: string; length_cm: number };
 type Seg = { ticket_code: string; garment_name: string; dry_state: string | null; start_cm: number; end_cm: number };
 type Occ = { rail_id: number; label: string; length_cm: number; rail_dry_state: string | null; segments: Seg[] };
@@ -11,9 +11,6 @@ function railStateText(s: string | null, count: number) {
 }
 function segClass(s: string | null) {
   return s === "wet" ? "seg seg--wet" : "seg seg--dry";
-}
-function segText(s: string | null) {
-  return s === "wet" ? "湿" : "干";
 }
 
 export default function OccupancyPage() {
@@ -33,7 +30,7 @@ export default function OccupancyPage() {
         <div className="ruler-label">
           <span>{m.label}
             <span className={m.segments.length ? (m.rail_dry_state === "wet" ? "rail-state rail-state--wet" : "rail-state rail-state--dry") : "rail-state rail-state--empty"}>
-              {railWordFromPieces(m.segments.map(s => s.dry_state))}
+              {railStateText(m.rail_dry_state, m.segments.length)}
             </span>
           </span>
           <span className="mono">0 — {m.length_cm} cm</span>

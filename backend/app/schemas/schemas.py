@@ -62,6 +62,6 @@ class OccupancyOut(BaseModel):
     rail_id: int
     label: str
     length_cm: float
-    # 该杆当前干湿集合：dry / wet / None（空杆或未标注）
+    # 该杆当前干湿集合：dry / wet；空杆为 None（未标注历史单归一化为 dry）
     rail_dry_state: str | None
     segments: list[OccupancySeg]

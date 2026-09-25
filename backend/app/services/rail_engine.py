@@ -48,12 +48,13 @@ def effective_state(state: str | None) -> str:
 def rail_state(occupied_states: list[str | None]) -> str | None:
     """杆上当前干湿集合的属性；空杆返回 None。
 
-    有占位即非空：历史工单 None 归一化为干衣，因此全 None 的杆是干衣杆。
+    有占位即非空：历史工单 None 归一化为干衣。同杆只允许一种属性，
+    归一化后集合必然只有一个值；用 max 保证结果确定（与插入顺序无关）。
     """
     if not occupied_states:
         return None
     states = {effective_state(s) for s in occupied_states}
-    return next(iter(states))
+    return max(states)
 
 
 def free_gaps(rail_length: float, occupied: list[Segment]) -> list[Segment]:
